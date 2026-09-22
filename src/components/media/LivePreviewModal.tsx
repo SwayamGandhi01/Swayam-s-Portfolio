@@ -102,7 +102,9 @@ export function LivePreviewModal({
             <div
               role="group"
               aria-label="Preview width"
-              className="mr-1 hidden items-center gap-1 rounded-full border border-[var(--line-strong)] p-1 sm:flex"
+              // Shown at every size — hiding it on phones left mobile
+              // visitors with no way off the desktop width.
+              className="mr-1 flex items-center gap-1 rounded-full border border-[var(--line-strong)] p-1"
             >
               {VIEWPORTS.map(({ id, label, Icon }) => (
                 <button
