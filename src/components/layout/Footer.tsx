@@ -6,6 +6,19 @@ import { AnchorLink } from "@/components/ui/AnchorLink";
 import { EditableLink } from "@/components/ui/Editable";
 import { useSmoothScroll } from "./SmoothScroll";
 
+/**
+ * Wordmark geometry, derived from the name's length.
+ *
+ * The font size is chosen so the name's *natural* width lands close to the
+ * viewBox width (≈0.52em average advance for this face), which leaves
+ * `lengthAdjust="spacing"` only a hair of tracking to correct. Without that,
+ * a much longer or shorter name would be stretched or crushed to fit.
+ */
+const WORDMARK_W = 1000;
+const WORDMARK_SIZE = Math.round(WORDMARK_W / (site.name.length * 0.52));
+const WORDMARK_BASELINE = Math.round(WORDMARK_SIZE * 0.8);
+const WORDMARK_H = Math.round(WORDMARK_SIZE * 1.02);
+
 export function Footer() {
   const lenis = useSmoothScroll();
   const [time, setTime] = useState<string | null>(null);
@@ -78,14 +91,34 @@ export function Footer() {
         </div>
       </div>
 
-      {/* Oversized wordmark, cropped by the viewport edge. */}
+      {/* Oversized wordmark.
+          Drawn as SVG text rather than a `18vw` heading: a viewport-relative
+          font size can't know how wide the name actually renders, so it
+          overflowed and clipped mid-word. `textLength` + `lengthAdjust` pin
+          the text to the box width instead, so the full name fits edge to
+          edge at every viewport and for any name length. */}
       <div
         aria-hidden
-        className="pointer-events-none select-none px-gutter pb-2"
+        className="pointer-events-none select-none px-gutter pb-6 pt-2"
       >
-        <span className="block whitespace-nowrap text-[18vw] font-semibold leading-[0.78] tracking-[-0.055em] text-paper/[0.045]">
-          {site.name}
-        </span>
+        <svg
+          viewBox={`0 0 ${WORDMARK_W} ${WORDMARK_H}`}
+          className="block w-full overflow-visible"
+          preserveAspectRatio="xMidYMid meet"
+        >
+          <text
+            x="0"
+            y={WORDMARK_BASELINE}
+            textLength={WORDMARK_W}
+            // `spacing` tracks the letters out or in to hit the exact width;
+            // it never distorts the glyphs themselves.
+            lengthAdjust="spacing"
+            fontSize={WORDMARK_SIZE}
+            className="fill-paper/[0.05] font-semibold"
+          >
+            {site.name}
+          </text>
+        </svg>
       </div>
     </footer>
   );
