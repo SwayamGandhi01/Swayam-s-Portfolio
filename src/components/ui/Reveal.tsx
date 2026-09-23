@@ -14,6 +14,9 @@ type RevealProps = {
   delay?: number;
   /** Stagger the element's direct children instead of the element itself. */
   stagger?: number | false;
+  /** Play on mount rather than on scroll — used inside the hero, which is
+   *  already in view on arrival and has nothing to scroll into. */
+  immediate?: boolean;
   /** Viewport position that triggers the reveal. */
   start?: string;
 };
@@ -34,6 +37,7 @@ export function Reveal({
   y = 28,
   delay = 0,
   stagger = false,
+  immediate = false,
   start = "top 85%",
 }: RevealProps) {
   const ref = useRef<HTMLDivElement>(null);
@@ -63,12 +67,14 @@ export function Reveal({
         ease: "expo.out",
         stagger: stagger === false ? 0 : stagger,
         clearProps: "willChange",
-        scrollTrigger: { trigger: el, start, once: true },
+        ...(immediate
+          ? {}
+          : { scrollTrigger: { trigger: el, start, once: true } }),
       });
     }, el);
 
     return () => ctx.revert();
-  }, [reduced, y, delay, stagger, start]);
+  }, [reduced, y, delay, stagger, immediate, start]);
 
   return (
     <Tag ref={ref} className={cn(className)}>

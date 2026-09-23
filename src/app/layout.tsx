@@ -10,6 +10,7 @@ import { Preloader } from "@/components/layout/Preloader";
 import { INTRO_SEEN_KEY } from "@/lib/constants";
 import { DEFAULT_THEME, THEME_COLOR, THEME_STORAGE_KEY } from "@/lib/theme";
 import { PageTransition } from "@/components/layout/PageTransition";
+import { JsonLd, personSchema, websiteSchema } from "@/lib/structured-data";
 import { Cursor } from "@/components/layout/Cursor";
 
 const geistSans = Geist({
@@ -65,6 +66,10 @@ export const metadata: Metadata = {
     description: site.tagline,
   },
   robots: { index: true, follow: true },
+  // Every page declares its own canonical. Without this, the deployment
+  // answers on more than one origin (the vercel.app subdomain and any custom
+  // domain) and search engines have to guess which one is authoritative.
+  alternates: { canonical: "/" },
 };
 
 /**
@@ -121,6 +126,10 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <script dangerouslySetInnerHTML={{ __html: introGate }} />
       </head>
       <body className="min-h-dvh">
+        {/* In <body> rather than <head>: JSON-LD is valid in either, and
+            this keeps the document head to metadata Next itself manages. */}
+        <JsonLd data={personSchema()} />
+        <JsonLd data={websiteSchema()} />
         <SmoothScroll>
           <Preloader />
           <Cursor />

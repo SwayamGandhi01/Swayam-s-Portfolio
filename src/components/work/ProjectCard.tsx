@@ -28,9 +28,12 @@ import { ProjectMediaActions } from "@/components/media/ProjectMediaActions";
 export function ProjectCard({
   project,
   hidden,
+  compact = false,
 }: {
   project: Project;
   hidden: boolean;
+  /** Renders the quieter variant used by the "More projects" band. */
+  compact?: boolean;
 }) {
   // Only show technology chips once they're real; a row of "[edit]" pills is
   // noise. Categories always carry useful information, so they show instead.
@@ -73,9 +76,14 @@ export function ProjectCard({
           )}
         </div>
 
-        {project.featured && (
+        {/* The role, not a "Featured" badge. Which band a card sits in is
+            already stated by the heading above it, so repeating it here would
+            spend the most valuable corner of the tile on something the
+            visitor just read. What they can't tell from a screenshot is which
+            half of the build was mine. */}
+        {project.role && (
           <span className="label absolute left-3 top-3 rounded-full bg-canvas/80 px-2.5 py-1.5 text-content backdrop-blur-sm">
-            Featured
+            {project.role}
           </span>
         )}
 
@@ -157,7 +165,10 @@ export function ProjectCard({
             aria-hidden
             className="label inline-flex items-center gap-1.5 text-muted transition-colors duration-300 group-hover/card:text-signal group-focus-within/card:text-signal"
           >
-            Case study
+            {/* "Case study" would be a promise these pages don't keep yet —
+                the unconfirmed ones open to a live link and an explicit note
+                that the write-up is pending. */}
+            {compact ? "Project details" : "Case study"}
             <ArrowRight
               className="size-3.5 transition-transform duration-500 ease-[var(--ease-out-expo)] group-hover/card:translate-x-0.5"
             />

@@ -68,6 +68,25 @@ export type Project = {
   features?: string[];
   /** Year, hidden in the UI while undefined. */
   year?: string;
+  /**
+   * The slice of the build that was yours, in two or three words — "Backend",
+   * "Frontend & design", "Full stack".
+   *
+   * Every value below is a summary of that project's own `contribution` list
+   * and nothing more. It is not a job title: on MIDIS the work was the backend
+   * only, so that is what it says, regardless of the title on the contract.
+   * Omit it rather than guess.
+   */
+  role?: string;
+  /**
+   * The hard part, and what was done about it. Both render only when set, and
+   * both are deliberately empty right now — the honest version of these has to
+   * come from the person who did the work, not be reconstructed from a live
+   * site. Add them in pairs; a challenge without a solution reads as an
+   * excuse.
+   */
+  challenge?: string;
+  solution?: string;
 };
 
 /* ------------------------------------------------------------------------ */
@@ -111,6 +130,7 @@ export const projects: Project[] = [
       "Areas-covered pages with filtering",
     ],
     technologies: ["Next.js", "React.js", "JavaScript", "SEO", "Email templates"],
+    role: "Full stack",
     liveUrl: "https://mobiletyrechampions.com/",
     featured: true,
   },
@@ -145,6 +165,7 @@ export const projects: Project[] = [
       "MongoDB",
       "REST APIs",
     ],
+    role: "Backend",
     liveUrl: "https://midis.in",
     featured: true,
   },
@@ -169,6 +190,7 @@ export const projects: Project[] = [
       "API-driven data management",
     ],
     technologies: ["Strapi CMS", "Node.js", "REST APIs"],
+    role: "Backend & CMS",
     liveUrl: "https://miningdiscovery.com/",
     featured: true,
   },
@@ -198,6 +220,7 @@ export const projects: Project[] = [
       "Dynamic filtering across listings",
     ],
     technologies: ["Next.js", "React.js", "Strapi CMS", "REST APIs"],
+    role: "Frontend & CMS integration",
     liveUrl: "https://www.thenoblemininginvestmentconference.com/",
     featured: true,
   },
@@ -222,6 +245,7 @@ export const projects: Project[] = [
       "Responsive layouts across breakpoints",
     ],
     technologies: ["React.js", "Next.js", "Tailwind CSS", "GSAP"],
+    role: "Frontend & design",
     liveUrl: "https://www.highspirits.au/",
     featured: true,
   },
@@ -246,6 +270,7 @@ export const projects: Project[] = [
       "Dynamic data throughout the frontend",
     ],
     technologies: ["Next.js", "React.js", "Strapi CMS", "REST APIs"],
+    role: "Frontend & CMS integration",
     liveUrl: "https://mining-investment-six.vercel.app/",
     // Production deployment of the same project.
     productionUrl: "https://www.themininginvestmentevent.com/",
@@ -387,7 +412,18 @@ export const orderedProjects = [...projects].sort(
   (a, b) => Number(b.featured) - Number(a.featured)
 );
 
+/**
+ * The two groups the showcase renders as separate bands.
+ *
+ * The split is the `featured` flag, and the flag tracks one thing: whether a
+ * confirmed write-up exists. Every featured entry has an `overview`, a real
+ * `contribution` list and real `technologies`; the rest carry `[edit]`
+ * placeholders, are `noindex` and stay out of the sitemap. So this is not a
+ * ranking of which client mattered most — it is "these have a case study
+ * behind them, those are links to live sites".
+ */
 export const featuredProjects = projects.filter((p) => p.featured);
+export const otherProjects = projects.filter((p) => !p.featured);
 
 export const getProject = (slug: string) =>
   projects.find((p) => p.slug === slug);

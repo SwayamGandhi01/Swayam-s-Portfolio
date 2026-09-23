@@ -7,6 +7,8 @@ import { gsap } from "@/lib/gsap";
 import { site } from "@/data/site";
 import { careerStartLabel, formatDuration, totalMonths } from "@/data/journey";
 import { Button } from "@/components/ui/Button";
+import { ResumeButton } from "@/components/ui/ResumeButton";
+import { Reveal } from "@/components/ui/Reveal";
 import { RevealText } from "@/components/ui/RevealText";
 import { HeroFallback } from "@/components/three/HeroFallback";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
@@ -93,8 +95,9 @@ export function Hero() {
         className="absolute inset-x-0 bottom-0 h-56 bg-gradient-to-t from-canvas to-transparent"
       />
 
-      <div className="shell relative flex flex-1 flex-col justify-center py-16">
+      <div className="shell relative flex flex-1 flex-col justify-center py-14 sm:py-16">
         <div data-hero-parallax className="max-w-[min(100%,60rem)]">
+          {/* 1 — who, and for how long. The role reads first. */}
           <RevealText
             immediate
             delay={0.1}
@@ -110,9 +113,11 @@ export function Hero() {
             </span>
           </RevealText>
 
+          {/* 2 — the creative line, and the only expressive element here:
+                  everything below it is deliberately plain by contrast. */}
           <RevealText
             as="h1"
-            className="mt-7 text-d1 font-semibold"
+            className="mt-6 text-d1 font-semibold sm:mt-7"
             immediate
             delay={0.24}
             stagger={0.1}
@@ -124,23 +129,65 @@ export function Hero() {
             {site.headline.trail}
           </RevealText>
 
+          {/* 3 — what that means in practice, in two measures: the first line
+                  makes the claim at full weight, the second qualifies it at
+                  lower contrast. Widths in ch so both stay readable. */}
           <RevealText
             immediate
             delay={0.5}
             stagger={0.06}
-            className="mt-8 max-w-[46ch] text-lead text-muted"
+            className="mt-7 max-w-[48ch] text-lead text-content sm:mt-8"
           >
             {site.tagline}
           </RevealText>
 
-          <div className="mt-11 flex flex-wrap items-center gap-3">
-            <Button href="#projects" variant="solid" arrow>
-              View projects
-            </Button>
-            <Button href="#contact" variant="outline">
-              Contact me
-            </Button>
-          </div>
+          <RevealText
+            immediate
+            delay={0.64}
+            stagger={0.06}
+            className="mt-4 max-w-[58ch] text-[0.9375rem] leading-relaxed text-muted sm:text-base"
+          >
+            {site.taglineDetail}
+          </RevealText>
+
+          {/* 4 — one primary action, two supporting. Each button sits in its
+                  own span so the entrance tween and Magnetic's hover drift
+                  write to different elements instead of both setting y. */}
+          <Reveal
+            immediate
+            delay={0.8}
+            stagger={0.07}
+            y={16}
+            className="mt-9 flex flex-wrap items-center gap-3 sm:mt-11"
+          >
+            <span className="inline-flex">
+              <Button href="#projects" variant="solid" arrow>
+                View selected work
+              </Button>
+            </span>
+            <span className="inline-flex">
+              <ResumeButton />
+            </span>
+            <span className="inline-flex">
+              <Button href="#contact" variant="ghost">
+                Contact me
+              </Button>
+            </span>
+          </Reveal>
+
+          {/* 5 — technical metadata. Stack and location only: the role is in
+                  the eyebrow above and availability is in the header, and
+                  repeating either on the same screen is just noise. */}
+          <Reveal
+            immediate
+            delay={0.95}
+            y={12}
+            className="label mt-8 flex flex-wrap items-center gap-x-3 gap-y-2 text-muted sm:mt-10"
+          >
+            <span>{site.stackSummary}</span>
+            <span aria-hidden className="h-3 w-px bg-[var(--line-strong)]" />
+            <span>{site.location}</span>
+          </Reveal>
         </div>
       </div>
 
@@ -157,8 +204,11 @@ export function Hero() {
             />
             Scroll to explore
           </button>
-          <span className="label hidden text-muted sm:block">
-            React · Next.js · Node · Strapi
+          {/* The header carries this from md up; this is the same fact at the
+              narrow widths where the header hides it. Never both at once. */}
+          <span className="label flex items-center gap-2 text-muted md:hidden">
+            <span aria-hidden className="size-1.5 rounded-full bg-signal" />
+            {site.availability}
           </span>
         </div>
       </div>

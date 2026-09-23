@@ -18,6 +18,27 @@ export type Role = {
   /** "YYYY-MM" — the final month worked, or null while ongoing. */
   end: string | null;
   body: string;
+  /**
+   * Two to four responsibilities, each one a thing that was actually done.
+   *
+   * These restate `body` as scannable lines rather than adding to it — a
+   * recruiter reads a timeline in bullets, not in prose. Nothing appears here
+   * that isn't already in the paragraph above it, and an empty array renders
+   * nothing at all rather than inviting filler.
+   */
+  highlights: string[];
+  /**
+   * Slugs of projects built in this role, in `data/projects.ts`.
+   *
+   * Stored as slugs rather than names so the timeline links to the case
+   * studies and can never drift out of sync with them — rename a project and
+   * this follows. An unknown slug renders nothing rather than a dead link.
+   *
+   * Confirmed by Swayam, 23 Sep 2026: every featured project was Midis
+   * Resources work. Nothing is attributed to Agenttuit, because nothing about
+   * that role has been confirmed.
+   */
+  projects?: string[];
   /** Technologies actually used in that role. Empty renders nothing. */
   tags: string[];
 };
@@ -29,7 +50,26 @@ export const roles: Role[] = [
     role: "Full Stack Developer",
     start: "2025-06",
     end: null,
-    body: "Building and shipping production websites across the whole stack — React and Next.js frontends, Node and Express services, Strapi content backends and MongoDB behind them — along with the third-party integrations and performance work that hold the two halves together.",
+    // One framing sentence. The detail used to live here too, which meant a
+    // reader got the same four facts twice — once in prose and again in the
+    // bullets below. The bullets keep them; this sets them up.
+    body: "Building and shipping production websites across the whole stack, from the interface down to the data behind it.",
+    // The clauses of the paragraph this replaced, split out so the timeline can
+    // be skimmed. No new claim is introduced by any of them.
+    highlights: [
+      "Build and ship production websites end to end, front end through database.",
+      "Frontend work in React and Next.js; services in Node and Express.",
+      "Content backends in Strapi, with MongoDB behind them.",
+      "Third-party API integration and performance work across both halves.",
+    ],
+    projects: [
+      "mobile-tyre-champions",
+      "midis",
+      "mining-discovery",
+      "noble-mining-investment-conference",
+      "high-spirits",
+      "mining-investment-event",
+    ],
     tags: [
       "React.js",
       "Next.js",
@@ -50,6 +90,11 @@ export const roles: Role[] = [
     // Deliberately brief: this describes the role as stated and nothing more.
     // Add the specifics — what was built, in what — when they're confirmed.
     body: "First professional role, working across both the front and the back end as a full stack intern.",
+    // Empty on purpose, and it should stay empty until Swayam says otherwise.
+    // Nothing about this role is documented anywhere in this repo beyond the
+    // title and the dates, and inventing three plausible-sounding bullets is
+    // exactly the failure mode this file exists to prevent.
+    highlights: [],
     tags: [],
   },
 ];

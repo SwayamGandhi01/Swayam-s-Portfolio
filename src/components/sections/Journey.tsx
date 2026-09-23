@@ -1,6 +1,7 @@
 "use client";
 
 import { useLayoutEffect, useRef } from "react";
+import { ArrowUpRight } from "lucide-react";
 import { gsap } from "@/lib/gsap";
 import {
   careerStartLabel,
@@ -12,6 +13,8 @@ import {
   totalMonths,
   type Role,
 } from "@/data/journey";
+import Link from "next/link";
+import { getProject } from "@/data/projects";
 import { Section, SectionHeading } from "@/components/ui/Section";
 import { cn } from "@/lib/utils";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
@@ -146,6 +149,9 @@ function RoleEntry({ role, reduced }: { role: Role; reduced: boolean }) {
   const { from, to } = roleDates(role);
   const current = role.end === null;
   const duration = formatDuration(roleMonths(role));
+  const built = (role.projects ?? [])
+    .map((slug) => getProject(slug))
+    .filter((p): p is NonNullable<typeof p> => Boolean(p));
 
   return (
     <li data-entry className="relative pl-10 md:pl-0">
@@ -258,6 +264,49 @@ function RoleEntry({ role, reduced }: { role: Role; reduced: boolean }) {
             <p className="mt-5 max-w-[62ch] leading-relaxed text-muted">
               {role.body}
             </p>
+
+            {/* Scannable restatement of the paragraph above. Rendered as a
+                real list so a screen reader announces the item count, and
+                skipped entirely for roles with nothing confirmed rather than
+                leaving an empty stub. */}
+            {role.highlights.length > 0 && (
+              <ul className="mt-5 space-y-2.5">
+                {role.highlights.map((item) => (
+                  <li
+                    key={item}
+                    className="flex gap-3.5 text-[0.9375rem] leading-relaxed text-muted"
+                  >
+                    <span
+                      aria-hidden
+                      className="mt-[0.6875rem] h-px w-3 shrink-0 bg-[var(--line-strong)] transition-colors duration-500 group-hover:bg-signal"
+                    />
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
+            )}
+
+            {/* The projects built in this role, linked to their case studies.
+                Resolved from slugs at render time, so a renamed or removed
+                project drops out here instead of leaving a dead link. */}
+            {built.length > 0 && (
+              <div className="mt-6 border-t border-[var(--line)] pt-6">
+                <p className="label text-muted">Projects built in this role</p>
+                <ul className="mt-3 flex flex-wrap gap-x-2 gap-y-2">
+                  {built.map((project) => (
+                    <li key={project.slug}>
+                      <Link
+                        href={`/work/${project.slug}`}
+                        className="inline-flex items-center gap-1.5 rounded-full border border-[var(--line)] px-3 py-1.5 text-xs text-muted transition-colors duration-300 hover:border-signal hover:text-signal"
+                      >
+                        {project.title}
+                        <ArrowUpRight aria-hidden className="size-3" />
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
 
             {role.tags.length > 0 && (
               <ul className="mt-6 flex flex-wrap gap-2 border-t border-[var(--line)] pt-6">

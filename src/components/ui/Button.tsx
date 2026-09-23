@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { AnchorLink } from "./AnchorLink";
 import { Magnetic } from "./Magnetic";
 
 type Variant = "solid" | "outline" | "ghost";
@@ -17,7 +18,13 @@ const variants: Record<Variant, string> = {
     "bg-signal text-on-signal hover:bg-content focus-visible:bg-content",
   outline:
     "border border-[var(--line-strong)] text-current hover:border-signal hover:text-signal",
-  ghost: "text-current hover:text-signal",
+  // The tertiary action. A transparent border keeps its box identical to the
+  // outline variant, so a row of mixed buttons still lines up on the same
+  // edges; the underline gives it an affordance on touch, where there is no
+  // hover state to discover it with.
+  ghost:
+    "border border-transparent text-muted underline decoration-[var(--line-strong)] " +
+    "decoration-1 underline-offset-4 hover:text-signal hover:decoration-signal",
 };
 
 type CommonProps = {
@@ -64,7 +71,32 @@ export function Button(props: ButtonAsLink | ButtonAsButton) {
 
   const node =
     "href" in props && props.href !== undefined ? (
-      (props as ButtonAsLink).external ? (
+      // An in-page target goes through the same Lenis-aware anchor the header
+      // uses. A plain next/link would do a native hash jump, which lands in
+      // the right place but skips the smooth scroll — so the header nav and a
+      // hero CTA pointing at the same section behaved differently.
+      // A download must stay a plain anchor. `next/link` calls
+      // `preventDefault()` on click and hands the URL to the router, which
+      // cancels the download and then fails to resolve a route for a file in
+      // `public/`. The `download` attribute is in `rest`, so it still lands on
+      // the element.
+      "download" in props ? (
+        <a
+          {...(rest as React.ComponentPropsWithoutRef<"a">)}
+          href={props.href}
+          className={classes}
+        >
+          {inner}
+        </a>
+      ) : props.href.startsWith("#") && !(props as ButtonAsLink).external ? (
+        <AnchorLink
+          {...(rest as Omit<React.ComponentPropsWithoutRef<"a">, "href" | "onClick">)}
+          href={props.href}
+          className={classes}
+        >
+          {inner}
+        </AnchorLink>
+      ) : (props as ButtonAsLink).external ? (
         <a
           {...(rest as React.ComponentPropsWithoutRef<"a">)}
           href={props.href}

@@ -2,11 +2,16 @@
 
 import { useCallback, useLayoutEffect, useRef, useState } from "react";
 import { Flip, gsap, ScrollTrigger } from "@/lib/gsap";
-import { categoriesInUse, orderedProjects } from "@/data/projects";
+import {
+  categoriesInUse,
+  featuredProjects,
+  otherProjects,
+} from "@/data/projects";
 import { Section, SectionHeading } from "@/components/ui/Section";
 import { ProjectCard } from "@/components/work/ProjectCard";
 import { ProjectFilters } from "@/components/work/ProjectFilters";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
+import { cn } from "@/lib/utils";
 
 /**
  * The filterable project showcase.
@@ -100,9 +105,9 @@ export function Projects() {
     return () => ctx.revert();
   }, [reduced]);
 
-  const visibleCount = orderedProjects.filter((p) =>
-    matches(p.category)
-  ).length;
+  const shownFeatured = featuredProjects.filter((p) => matches(p.category));
+  const shownOther = otherProjects.filter((p) => matches(p.category));
+  const visibleCount = shownFeatured.length + shownOther.length;
 
   return (
     <Section id="projects">
@@ -129,18 +134,95 @@ export function Projects() {
         </p>
       </div>
 
-      <div
-        ref={gridRef}
-        className="mt-12 grid gap-x-8 gap-y-14 sm:grid-cols-2 xl:grid-cols-3"
-      >
-        {orderedProjects.map((project) => (
-          <ProjectCard
-            key={project.id}
-            project={project}
-            hidden={!matches(project.category)}
-          />
-        ))}
+      {/* Two bands, one Flip scope. `gridRef` wraps both so a filter change
+          animates cards moving between and within them as a single layout
+          change — two separate Flip states would tear at the boundary. */}
+      <div ref={gridRef}>
+        <GroupHeading
+          label="Featured case studies"
+          note="Written up in full: the brief, what I built, and the stack behind it."
+          count={shownFeatured.length}
+          hidden={shownFeatured.length === 0}
+        />
+        <div
+          data-group="featured"
+          className={cn(
+            "mt-10 grid gap-x-8 gap-y-14 sm:grid-cols-2 xl:grid-cols-3",
+            shownFeatured.length === 0 && "hidden"
+          )}
+        >
+          {featuredProjects.map((project) => (
+            <ProjectCard
+              key={project.id}
+              project={project}
+              hidden={!matches(project.category)}
+            />
+          ))}
+        </div>
+
+        <GroupHeading
+          label="More projects"
+          note="Live client sites. The build notes for these are still being written, so nothing is claimed for them yet."
+          count={shownOther.length}
+          hidden={shownOther.length === 0}
+          className="mt-24"
+        />
+        <div
+          data-group="other"
+          className={cn(
+            "mt-10 grid gap-x-8 gap-y-14 sm:grid-cols-2 xl:grid-cols-3",
+            shownOther.length === 0 && "hidden"
+          )}
+        >
+          {otherProjects.map((project) => (
+            <ProjectCard
+              key={project.id}
+              project={project}
+              hidden={!matches(project.category)}
+              compact
+            />
+          ))}
+        </div>
       </div>
     </Section>
+  );
+}
+
+/**
+ * The rule-and-label that opens each band.
+ *
+ * Hidden rather than unmounted when a filter empties its group, so the DOM
+ * Flip measured before the click is still the DOM it finds afterwards.
+ */
+function GroupHeading({
+  label,
+  note,
+  count,
+  hidden,
+  className,
+}: {
+  label: string;
+  note: string;
+  count: number;
+  hidden: boolean;
+  className?: string;
+}) {
+  return (
+    <div
+      className={cn("hairline-t pt-6", hidden && "hidden", className)}
+      // The count is announced by the section total above; repeating it per
+      // group would make a filter change fire two live regions at once.
+      aria-hidden={hidden}
+    >
+      <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2">
+        <h3 className="label text-signal">{label}</h3>
+        <span className="label text-muted">
+          {count} {count === 1 ? "project" : "projects"}
+        </span>
+      </div>
+      <p className="mt-3 max-w-[58ch] text-sm leading-relaxed text-muted">
+        {note}
+      </p>
+    </div>
   );
 }

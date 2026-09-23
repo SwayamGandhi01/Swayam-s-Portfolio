@@ -22,8 +22,9 @@ import { ScreenshotGallery } from "@/components/media/ScreenshotGallery";
 import { ProjectMediaActions } from "@/components/media/ProjectMediaActions";
 import { Reveal } from "@/components/ui/Reveal";
 import { RevealText } from "@/components/ui/RevealText";
-import { SketchReveal } from "@/components/ui/SketchReveal";
+import { WipeReveal } from "@/components/ui/WipeReveal";
 import { Editable, EditableLink, strip } from "@/components/ui/Editable";
+import { JsonLd, projectSchema } from "@/lib/structured-data";
 
 // A fixed list of slugs with no external data source — prerender them all.
 export function generateStaticParams() {
@@ -45,7 +46,18 @@ export async function generateMetadata({
   return {
     title,
     description,
+    // Resolved against `metadataBase` in the root layout, so this is the one
+    // URL a crawler should treat as authoritative for the case study.
+    alternates: { canonical: `/work/${project.slug}` },
     openGraph: {
+      type: "article",
+      title,
+      description,
+      url: `/work/${project.slug}`,
+      images: cover ? [cover] : undefined,
+    },
+    twitter: {
+      card: "summary_large_image",
       title,
       description,
       images: cover ? [cover] : undefined,
@@ -71,8 +83,13 @@ export default async function ProjectPage({
     (c) => !isPlaceholder(c)
   );
 
+  // Null for unconfirmed entries, which are noindex and out of the sitemap —
+  // marking them up would contradict both.
+  const schema = projectSchema(project, cover);
+
   return (
     <article className="pt-[var(--header-h)]">
+      {schema && <JsonLd data={schema} />}
       {/* ---- Header ---- */}
       <header className="shell pb-16 pt-16 md:pt-24">
         <Reveal y={16}>
@@ -116,6 +133,14 @@ export default async function ProjectPage({
 
           <div className="lg:col-span-4 lg:pl-6">
             <Reveal stagger={0.08} className="hairline-t pt-5">
+              {/* First row on purpose: a recruiter scanning this page wants to
+                  know which part of the build was his before anything else. */}
+              {project.role && (
+                <div className="flex items-baseline justify-between gap-6 border-b border-[var(--line)] py-3">
+                  <span className="label text-muted">Role</span>
+                  <span className="text-right text-sm">{project.role}</span>
+                </div>
+              )}
               {project.year && (
                 <div className="flex items-baseline justify-between gap-6 border-b border-[var(--line)] py-3">
                   <span className="label text-muted">Year</span>
@@ -173,12 +198,11 @@ export default async function ProjectPage({
       {cover && (
         <div className="shell">
           <Reveal y={28}>
-            <SketchReveal
+            <WipeReveal
               src={cover}
               alt={`Screenshot of the ${strip(project.title)} website homepage`}
               sizes="100vw"
               priority
-              mode="inview"
               className="aspect-16/9 w-full rounded-sm border border-[var(--line)] md:aspect-21/9"
             />
           </Reveal>
@@ -203,7 +227,30 @@ export default async function ProjectPage({
             </Reveal>
           )}
 
-          <Reveal stagger={0.08} className={project.overview ? "mt-16" : ""}>
+          {/* Renders only as a pair. A challenge with no solution beside it
+              reads as an excuse, and a solution with no challenge reads as a
+              feature list — which the section below already is. */}
+          {project.challenge && project.solution && (
+            <Reveal stagger={0.1} className={project.overview ? "mt-16" : ""}>
+              <h2 className="label text-signal">The hard part</h2>
+              <p className="mt-6 leading-relaxed text-muted">
+                {project.challenge}
+              </p>
+              <h2 className="label mt-10 text-signal">How it was solved</h2>
+              <p className="mt-6 leading-relaxed text-muted">
+                {project.solution}
+              </p>
+            </Reveal>
+          )}
+
+          <Reveal
+            stagger={0.08}
+            className={
+              project.overview || (project.challenge && project.solution)
+                ? "mt-16"
+                : ""
+            }
+          >
             <h2 className="label text-signal">My contribution</h2>
 
             {contributionConfirmed ? (
