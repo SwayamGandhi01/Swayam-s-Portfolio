@@ -58,7 +58,7 @@ export function Footer() {
               <AnchorLink
                 key={item.href}
                 href={item.href}
-                className="text-sm text-muted transition-colors hover:text-paper"
+                className="text-sm text-muted transition-colors hover:text-content"
               >
                 {item.label}
               </AnchorLink>
@@ -114,7 +114,7 @@ export function Footer() {
             // it never distorts the glyphs themselves.
             lengthAdjust="spacing"
             fontSize={WORDMARK_SIZE}
-            className="fill-paper/[0.05] font-semibold"
+            className="fill-content/[0.05] font-semibold"
           >
             {site.name}
           </text>

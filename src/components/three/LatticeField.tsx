@@ -3,6 +3,8 @@
 import { useMemo, useRef } from "react";
 import { useFrame, useThree } from "@react-three/fiber";
 import * as THREE from "three";
+import { useTheme } from "@/hooks/useTheme";
+import type { Theme } from "@/lib/theme";
 
 /**
  * "The build surface" — a plane of points displaced entirely in the vertex
@@ -13,7 +15,35 @@ import * as THREE from "three";
  * writes. Nothing is allocated in the render loop, there is no geometry
  * update, and there are no textures or model files to download — the whole
  * visual is about 40 lines of GLSL.
+ *
+ * This is the one place in the site that can't be themed with a CSS variable:
+ * the colours are shader uniforms and the compositing happens on the GPU. So
+ * it subscribes to the theme directly — see `PALETTE` below for why the two
+ * themes need different blending, not just different colours.
  */
+
+/**
+ * Additive blending is what makes the dark field glow: each point adds light
+ * to the near-black canvas. Run the same material on cream and every point
+ * adds toward white, so the field bleaches out and disappears. Light therefore
+ * uses normal blending with darker points, which subtracts from the page the
+ * way ink on paper does.
+ */
+const PALETTE: Record<
+  Theme,
+  { base: string; accent: string; blending: THREE.Blending }
+> = {
+  dark: {
+    base: "#4a5866",
+    accent: "#ff5c35",
+    blending: THREE.AdditiveBlending,
+  },
+  light: {
+    base: "#6f7b8a",
+    accent: "#b03714",
+    blending: THREE.NormalBlending,
+  },
+};
 
 const vertexShader = /* glsl */ `
   uniform float uTime;
@@ -73,8 +103,11 @@ const fragmentShader = /* glsl */ `
 export function LatticeField() {
   const materialRef = useRef<THREE.ShaderMaterial>(null);
   const viewport = useThree((s) => s.viewport);
+  const theme = useTheme();
 
   const pointer = useRef({ x: 0, y: 0, strength: 0 });
+  /** Which palette the material is currently carrying. */
+  const painted = useRef<Theme | null>(null);
 
   // 110² segments ≈ 12.3k points: dense enough to read as a surface, light
   // enough that a mid-range integrated GPU doesn't notice.
@@ -93,8 +126,9 @@ export function LatticeField() {
           uPointer: { value: new THREE.Vector2(0, 0) },
           uPointerStrength: { value: 0 },
           uPixelRatio: { value: 1 },
-          uBase: { value: new THREE.Color("#4a5866") },
-          uAccent: { value: new THREE.Color("#ff5c35") },
+          // Seeded with the default; the effect below owns them from here.
+          uBase: { value: new THREE.Color(PALETTE.dark.base) },
+          uAccent: { value: new THREE.Color(PALETTE.dark.accent) },
         },
       }),
     []
@@ -104,8 +138,24 @@ export function LatticeField() {
     // Written through the JSX ref, not the memoised object: the render loop
     // owns these uniforms, and React must not consider them part of its
     // reactive graph.
-    const uniforms = materialRef.current?.uniforms;
-    if (!uniforms) return;
+    const material = materialRef.current;
+    if (!material) return;
+    const uniforms = material.uniforms;
+
+    // Repaint on theme change. Here rather than in an effect for the same
+    // reason as everything else in this file: the loop owns the material, and
+    // an effect that also touched it would make two writers of one object.
+    // Guarded by a ref so it runs on the frame after a switch and never again.
+    if (painted.current !== theme) {
+      painted.current = theme;
+      const { base, accent, blending } = PALETTE[theme];
+      uniforms.uBase.value.set(base);
+      uniforms.uAccent.value.set(accent);
+      material.blending = blending;
+      // Blending is baked into the material's program state, so three has to
+      // be told; the colours are plain uniform writes and don't need it.
+      material.needsUpdate = true;
+    }
 
     uniforms.uTime.value += delta;
     uniforms.uPixelRatio.value = state.gl.getPixelRatio();

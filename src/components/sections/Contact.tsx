@@ -90,7 +90,7 @@ export function Contact() {
 
         <div className="lg:col-span-7 lg:pl-8">
           <Reveal y={36}>
-            <div className="relative rounded-sm border border-[var(--line)] bg-ink-2/60 p-7 sm:p-10">
+            <div className="relative rounded-sm border border-[var(--line)] bg-surface/60 p-7 shadow-[var(--shadow-card)] sm:p-10">
               <div
                 aria-hidden
                 className="blueprint pointer-events-none absolute inset-0 opacity-30"

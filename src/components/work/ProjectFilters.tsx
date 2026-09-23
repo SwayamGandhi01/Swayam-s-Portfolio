@@ -48,8 +48,8 @@ export function ProjectFilters({
                 "has-[:focus-visible]:outline has-[:focus-visible]:outline-2",
                 "has-[:focus-visible]:outline-offset-3 has-[:focus-visible]:outline-signal",
                 active
-                  ? "border-signal bg-signal text-ink"
-                  : "border-[var(--line-strong)] text-muted hover:border-paper/40 hover:text-paper"
+                  ? "border-signal bg-signal text-on-signal"
+                  : "border-[var(--line-strong)] text-muted hover:border-content/40 hover:text-content"
               )}
             >
               <input
@@ -66,7 +66,7 @@ export function ProjectFilters({
               <span
                 className={cn(
                   "ml-2 font-mono text-[0.625rem] tabular-nums",
-                  active ? "text-ink/60" : "text-muted"
+                  active ? "text-on-signal/60" : "text-muted"
                 )}
               >
                 {option.count}

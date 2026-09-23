@@ -242,7 +242,7 @@ export default async function ProjectPage({
 
         <aside className="lg:col-span-5 lg:pl-8">
           <Reveal y={28} className="lg:sticky lg:top-28">
-            <div className="rounded-sm border border-[var(--line)] bg-ink-2/50 p-7">
+            <div className="rounded-sm border border-[var(--line)] bg-surface/50 p-7">
               {project.features && project.features.length > 0 && (
                 <>
                   <h2 className="label text-signal">Key features</h2>
@@ -309,7 +309,7 @@ export default async function ProjectPage({
           )}
 
           {media?.video && (
-            <div className="mt-16 flex flex-col gap-5 rounded-sm border border-[var(--line)] bg-ink-2/50 p-7 sm:flex-row sm:items-center sm:justify-between sm:p-9">
+            <div className="mt-16 flex flex-col gap-5 rounded-sm border border-[var(--line)] bg-surface/50 p-7 sm:flex-row sm:items-center sm:justify-between sm:p-9">
               <div>
                 <h2 className="text-xl font-semibold tracking-tight">
                   Website walkthrough

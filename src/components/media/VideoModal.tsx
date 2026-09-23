@@ -48,7 +48,7 @@ export function VideoModal({
             preload="metadata"
             poster={video.poster}
             aria-label={video.title}
-            className="max-h-full w-full max-w-5xl rounded-sm border border-[var(--line)] bg-ink"
+            className="max-h-full w-full max-w-5xl rounded-sm border border-[var(--line)] bg-canvas"
           >
             <source src={video.src} type="video/mp4" />
             {/* Shown by browsers that can't play the source at all. */}

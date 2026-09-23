@@ -113,7 +113,7 @@ export function StackDiagram({ className }: { className?: string }) {
           <li key={layer.index} data-layer>
             <div
               className={cn(
-                "group relative flex gap-4 rounded-sm border bg-paper-2/60 p-4 transition-colors duration-500",
+                "group relative flex gap-4 rounded-sm border bg-surface/60 p-4 shadow-[var(--shadow-card)] transition-colors duration-500",
                 layer.seam
                   ? "border-signal/35 bg-signal/[0.06]"
                   : "border-[var(--line)] hover:border-[var(--line-strong)]"
@@ -124,7 +124,7 @@ export function StackDiagram({ className }: { className?: string }) {
                 aria-hidden
                 className={cn(
                   "relative mt-0.5 size-2.5 shrink-0 rounded-full",
-                  layer.seam ? "bg-signal" : "bg-ink/35"
+                  layer.seam ? "bg-signal" : "bg-canvas/35"
                 )}
               />
 
@@ -136,14 +136,14 @@ export function StackDiagram({ className }: { className?: string }) {
                   <h3 className="text-[0.9375rem] font-semibold tracking-tight">
                     {layer.name}
                   </h3>
-                  <span className="label text-muted-ink">{layer.role}</span>
+                  <span className="label text-muted">{layer.role}</span>
                 </div>
 
                 <ul className="mt-2.5 flex flex-wrap gap-x-3 gap-y-1">
                   {layer.tech.map((item) => (
                     <li
                       key={item}
-                      className="font-mono text-[0.6875rem] text-muted-ink"
+                      className="font-mono text-[0.6875rem] text-muted"
                     >
                       {item}
                     </li>

@@ -90,7 +90,7 @@ export function Hero() {
       )}
       <div
         aria-hidden
-        className="absolute inset-x-0 bottom-0 h-56 bg-gradient-to-t from-ink to-transparent"
+        className="absolute inset-x-0 bottom-0 h-56 bg-gradient-to-t from-canvas to-transparent"
       />
 
       <div className="shell relative flex flex-1 flex-col justify-center py-16">
@@ -149,7 +149,7 @@ export function Hero() {
           <button
             type="button"
             onClick={() => lenis.scrollTo("#about")}
-            className="label group flex items-center gap-3 text-muted transition-colors hover:text-paper"
+            className="label group flex items-center gap-3 text-muted transition-colors hover:text-content"
           >
             <ArrowDown
               aria-hidden

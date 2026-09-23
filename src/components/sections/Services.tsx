@@ -31,7 +31,7 @@ export function Services() {
               {/* Accent wash rises on hover — transform only. */}
               <span
                 aria-hidden
-                className="pointer-events-none absolute inset-0 origin-bottom scale-y-0 bg-ink-2 transition-transform duration-700 ease-[var(--ease-out-expo)] group-hover:scale-y-100"
+                className="pointer-events-none absolute inset-0 origin-bottom scale-y-0 bg-surface transition-transform duration-700 ease-[var(--ease-out-expo)] group-hover:scale-y-100"
               />
               <span
                 aria-hidden

@@ -8,6 +8,7 @@ import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { Preloader } from "@/components/layout/Preloader";
 import { INTRO_SEEN_KEY } from "@/lib/constants";
+import { DEFAULT_THEME, THEME_COLOR, THEME_STORAGE_KEY } from "@/lib/theme";
 import { PageTransition } from "@/components/layout/PageTransition";
 import { Cursor } from "@/components/layout/Cursor";
 
@@ -66,10 +67,15 @@ export const metadata: Metadata = {
   robots: { index: true, follow: true },
 };
 
-export const viewport: Viewport = {
-  themeColor: "#0b0c0e",
-  colorScheme: "dark",
-};
+/**
+ * No `themeColor` or `colorScheme` here.
+ *
+ * Both are per-visitor now, and this export is evaluated once on the server
+ * for everybody. `color-scheme` is declared in CSS beside each theme's tokens
+ * instead, and `theme-color` is a plain meta tag below, which the theme
+ * script rewrites before first paint.
+ */
+export const viewport: Viewport = {};
 
 /**
  * Runs before first paint. Decides whether the intro overlay is shown at all,
@@ -79,16 +85,39 @@ export const viewport: Viewport = {
  */
 const introGate = `try{if(sessionStorage.getItem('${INTRO_SEEN_KEY}')==='1'||matchMedia('(prefers-reduced-motion: reduce)').matches){document.documentElement.dataset.intro='skip'}}catch(e){}`;
 
+/**
+ * Also runs before first paint — this is the whole flash-prevention story.
+ *
+ * Every colour on the page is a custom property keyed off `<html data-theme>`,
+ * so setting that attribute synchronously in `<head>`, before the browser has
+ * painted a single pixel, means the correct theme is the only one ever on
+ * screen. It cannot be done from an effect or a provider: both run after the
+ * first paint, and that gap is the flash.
+ *
+ * Only an explicit choice is honoured — see `DEFAULT_THEME`. To follow the OS
+ * instead, the fallback becomes
+ * `matchMedia('(prefers-color-scheme: light)').matches?'light':'dark'`.
+ *
+ * The storage read is wrapped because it throws outright under some privacy
+ * settings, and the meta tag is updated in the same breath so the browser
+ * chrome never flashes either.
+ */
+const themeScript = `(function(){var t='${DEFAULT_THEME}';try{var s=localStorage.getItem('${THEME_STORAGE_KEY}');if(s==='light'||s==='dark')t=s}catch(e){}document.documentElement.dataset.theme=t;var m=document.querySelector('meta[name="theme-color"]');if(m)m.content=t==='light'?'${THEME_COLOR.light}':'${THEME_COLOR.dark}'})()`;
+
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
-      // The gate script writes a data attribute onto <html> before React
-      // hydrates; React must not treat that as a mismatch.
+      // The head scripts write data attributes onto <html> before React
+      // hydrates; React must not treat those as a mismatch.
       suppressHydrationWarning
       className={`${geistSans.variable} ${geistMono.variable} ${instrumentSerif.variable} antialiased`}
     >
       <head>
+        {/* Rendered by hand rather than through the `viewport` export, so the
+            script below is guaranteed to find it already in the document. */}
+        <meta name="theme-color" content={THEME_COLOR[DEFAULT_THEME]} />
+        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
         <script dangerouslySetInnerHTML={{ __html: introGate }} />
       </head>
       <body className="min-h-dvh">

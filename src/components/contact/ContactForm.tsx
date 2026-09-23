@@ -263,7 +263,7 @@ export function ContactForm() {
               "Performance work",
               "Something else",
             ].map((option) => (
-              <option key={option} value={option} className="bg-ink-2">
+              <option key={option} value={option} className="bg-surface">
                 {option}
               </option>
             ))}
@@ -298,8 +298,8 @@ export function ContactForm() {
           disabled={status === "submitting"}
           className={cn(
             "group inline-flex items-center gap-2.5 rounded-full px-7 py-3.5 text-sm font-medium tracking-tight",
-            "bg-signal text-ink transition-colors duration-300",
-            "hover:bg-paper disabled:cursor-not-allowed disabled:opacity-60"
+            "bg-signal text-on-signal transition-colors duration-300",
+            "hover:bg-content disabled:cursor-not-allowed disabled:opacity-60"
           )}
         >
           {status === "submitting" && (

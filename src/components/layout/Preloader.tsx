@@ -91,7 +91,7 @@ export function Preloader() {
     <div
       ref={rootRef}
       data-intro-overlay
-      className="fixed inset-0 z-[90] flex flex-col justify-between bg-ink px-gutter py-8"
+      className="fixed inset-0 z-[90] flex flex-col justify-between bg-canvas px-gutter py-8"
       role="status"
       aria-live="polite"
       aria-label="Loading"

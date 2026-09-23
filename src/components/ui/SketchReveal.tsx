@@ -71,7 +71,7 @@ export function SketchReveal({
   return (
     <div
       ref={ref}
-      className={cn("relative overflow-hidden bg-ink-2", className)}
+      className={cn("relative overflow-hidden bg-surface", className)}
       onPointerEnter={(e) =>
         mode === "hover" && e.pointerType !== "touch" && setHovered(true)
       }

@@ -47,7 +47,7 @@ export function ProjectCard({
         hidden && "hidden"
       )}
     >
-      <div className="relative overflow-hidden rounded-lg border border-[var(--line)] transition-colors duration-500 group-hover/card:border-signal/45 group-focus-within/card:border-signal/45">
+      <div className="relative overflow-hidden rounded-lg border border-[var(--line)] shadow-[var(--shadow-card)] transition-colors duration-500 group-hover/card:border-signal/45 group-focus-within/card:border-signal/45">
         {/* The aspect box reserves the space before the image decodes, so a
             grid of sixteen screenshots never shifts the layout. */}
         <div className="relative aspect-16/10">
@@ -65,7 +65,7 @@ export function ProjectCard({
           ) : (
             /* No capture on file — a designed empty state, never a broken
                image. The live link below stays available regardless. */
-            <div className="flex h-full w-full flex-col items-center justify-center gap-3 bg-ink-2">
+            <div className="flex h-full w-full flex-col items-center justify-center gap-3 bg-surface">
               <div className="blueprint absolute inset-0 opacity-40" aria-hidden />
               <ImageOff aria-hidden className="relative size-5 text-muted" />
               <p className="label relative text-muted">Preview unavailable</p>
@@ -74,7 +74,7 @@ export function ProjectCard({
         </div>
 
         {project.featured && (
-          <span className="label absolute left-3 top-3 rounded-full bg-ink/80 px-2.5 py-1.5 text-paper backdrop-blur-sm">
+          <span className="label absolute left-3 top-3 rounded-full bg-canvas/80 px-2.5 py-1.5 text-content backdrop-blur-sm">
             Featured
           </span>
         )}

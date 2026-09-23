@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 import { gsap } from "@/lib/gsap";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { usePointerFine } from "@/hooks/useMediaQuery";
+import { cn } from "@/lib/utils";
 
 /**
  * Custom cursor: a small dot that tracks exactly, plus a ring that lags
@@ -13,6 +14,11 @@ import { usePointerFine } from "@/hooks/useMediaQuery";
  * Only mounts for fine pointers with motion enabled — on touch it would be
  * invisible dead weight. The native cursor is never hidden, so the pointer
  * remains visible if this component fails to mount for any reason.
+ *
+ * GSAP moves and scales it; its colours are a `data-state` attribute and a CSS
+ * transition. That split is deliberate — GSAP resolves a `var()` once, when
+ * the tween starts, and writes the result inline, so a tweened colour would
+ * still be the previous theme's after a switch. An attribute re-resolves.
  */
 export function Cursor() {
   const reduced = useReducedMotion();
@@ -54,15 +60,18 @@ export function Cursor() {
 
       if (text) {
         label.textContent = text;
-        gsap.to(ring, { scale: 3.1, borderColor: "var(--color-signal)", backgroundColor: "var(--color-signal)", duration: 0.4, ease: "expo.out" });
+        ring.dataset.state = "label";
+        gsap.to(ring, { scale: 3.1, duration: 0.4, ease: "expo.out" });
         gsap.to(label, { autoAlpha: 1, duration: 0.25 });
         gsap.to(dot, { scale: 0, duration: 0.3 });
       } else if (target) {
-        gsap.to(ring, { scale: 1.8, borderColor: "var(--color-signal)", backgroundColor: "transparent", duration: 0.4, ease: "expo.out" });
+        ring.dataset.state = "hot";
+        gsap.to(ring, { scale: 1.8, duration: 0.4, ease: "expo.out" });
         gsap.to(label, { autoAlpha: 0, duration: 0.2 });
         gsap.to(dot, { scale: 1, duration: 0.3 });
       } else {
-        gsap.to(ring, { scale: 1, borderColor: "var(--line-strong)", backgroundColor: "transparent", duration: 0.4, ease: "expo.out" });
+        ring.dataset.state = "idle";
+        gsap.to(ring, { scale: 1, duration: 0.4, ease: "expo.out" });
         gsap.to(label, { autoAlpha: 0, duration: 0.2 });
         gsap.to(dot, { scale: 1, duration: 0.3 });
       }
@@ -90,12 +99,18 @@ export function Cursor() {
     <div aria-hidden className="pointer-events-none fixed inset-0 z-[95] hidden lg:block">
       <div
         ref={ringRef}
-        className="absolute left-0 top-0 flex size-10 items-center justify-center rounded-full border border-[var(--line-strong)] opacity-0 will-change-transform"
+        data-state="idle"
+        className={cn(
+          "absolute left-0 top-0 flex size-10 items-center justify-center rounded-full border opacity-0 will-change-transform",
+          "border-[var(--line-strong)] transition-[background-color,border-color] duration-300 ease-[var(--ease-out-expo)]",
+          "data-[state=hot]:border-signal",
+          "data-[state=label]:border-signal data-[state=label]:bg-signal"
+        )}
         style={{ marginLeft: "-1.25rem", marginTop: "-1.25rem" }}
       >
         <span
           ref={labelRef}
-          className="font-mono text-[0.3125rem] font-medium uppercase tracking-[0.12em] text-ink opacity-0"
+          className="font-mono text-[0.3125rem] font-medium uppercase tracking-[0.12em] text-on-signal opacity-0"
         />
       </div>
       <div

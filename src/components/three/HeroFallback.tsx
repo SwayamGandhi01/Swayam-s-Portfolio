@@ -15,7 +15,7 @@ export function HeroFallback() {
         style={{
           transform: "perspective(900px) rotateX(62deg)",
           backgroundImage:
-            "radial-gradient(circle, color-mix(in oklab, var(--color-paper) 26%, transparent) 1px, transparent 1.4px)",
+            "radial-gradient(circle, color-mix(in oklab, var(--color-content) 26%, transparent) 1px, transparent 1.4px)",
           backgroundSize: "44px 44px",
           maskImage:
             "radial-gradient(ellipse 75% 60% at 50% 45%, #000 20%, transparent 78%)",

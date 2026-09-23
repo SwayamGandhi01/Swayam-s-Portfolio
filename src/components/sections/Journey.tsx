@@ -47,6 +47,7 @@ export function Journey() {
       gsap.utils.toArray<HTMLElement>("[data-entry]").forEach((entry) => {
         const card = entry.querySelector("[data-card]");
         const node = entry.querySelector("[data-node]");
+        const fill = entry.querySelector("[data-node-fill]");
         const tags = entry.querySelectorAll("[data-tag]");
 
         gsap.set(card, { opacity: 0, y: 36 });
@@ -56,18 +57,13 @@ export function Journey() {
           scrollTrigger: { trigger: entry, start: "top 82%", once: true },
         });
 
+        // Only transforms are tweened. The accent lives on a separate fill
+        // layer styled in CSS, because GSAP resolves `var(--color-signal)`
+        // once and writes the result inline — which would leave the previous
+        // theme's orange frozen on the node after a switch.
         tl.to(card, { opacity: 1, y: 0, duration: 0.9, ease: "expo.out" })
-          .to(
-            node,
-            {
-              backgroundColor: "var(--color-signal)",
-              borderColor: "var(--color-signal)",
-              scale: 1,
-              duration: 0.45,
-              ease: "back.out(2)",
-            },
-            0.1
-          );
+          .to(node, { scale: 1, duration: 0.45, ease: "back.out(2)" }, 0.1)
+          .to(fill, { scale: 1, duration: 0.45, ease: "back.out(2)" }, 0.1);
 
         if (tags.length) {
           tl.to(
@@ -118,7 +114,7 @@ export function Journey() {
               {/* Derived from today's date, so the value the browser computes
                   can differ from the one baked in at build time once a month
                   rolls over. The browser's is correct. */}
-              <span suppressHydrationWarning className="text-paper">
+              <span suppressHydrationWarning className="text-content">
                 {formatDuration(totalMonths())}
               </span>{" "}
               across two roles, listed most recent first.
@@ -158,7 +154,7 @@ function RoleEntry({ role, reduced }: { role: Role; reduced: boolean }) {
             Stacked and right-aligned against the spine on desktop; a single
             inline row on mobile, where a narrow column would just cramp. */}
         <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1 pb-4 md:flex-col md:items-end md:gap-y-1.5 md:pb-0 md:pr-10 md:pt-5">
-          <span className="label text-paper">{from}</span>
+          <span className="label text-content">{from}</span>
           <span aria-hidden className="label text-muted md:hidden">
             —
           </span>
@@ -185,18 +181,19 @@ function RoleEntry({ role, reduced }: { role: Role; reduced: boolean }) {
             data-node
             aria-hidden
             className={cn(
-              "absolute -left-10 top-6 size-3.5 rounded-full border border-[var(--line-strong)] bg-ink md:left-0",
+              "absolute -left-10 top-6 size-3.5 rounded-full border border-[var(--line-strong)] bg-canvas md:left-0",
               !reduced && "scale-75"
             )}
-            style={
-              reduced
-                ? {
-                    backgroundColor: "var(--color-signal)",
-                    borderColor: "var(--color-signal)",
-                  }
-                : undefined
-            }
-          />
+          >
+            <span
+              data-node-fill
+              className={cn(
+                // Inset -1px so the fill covers the ring's own border.
+                "absolute inset-[-1px] rounded-full bg-signal",
+                !reduced && "scale-0"
+              )}
+            />
+          </span>
           {current && (
             <span
               aria-hidden
@@ -208,7 +205,7 @@ function RoleEntry({ role, reduced }: { role: Role; reduced: boolean }) {
             data-card
             className={cn(
               "group relative overflow-hidden rounded-lg border p-6 sm:p-8",
-              "bg-gradient-to-b from-ink-2/80 to-ink-2/30",
+              "bg-gradient-to-b from-surface/80 to-surface/30 shadow-[var(--shadow-card)]",
               "transition-[transform,border-color,box-shadow] duration-500 ease-[var(--ease-out-expo)]",
               "hover:-translate-y-1 hover:border-signal/35",
               "hover:shadow-[0_18px_48px_-24px_color-mix(in_oklab,var(--color-signal)_55%,transparent)]",
@@ -232,7 +229,7 @@ function RoleEntry({ role, reduced }: { role: Role; reduced: boolean }) {
                   "grid size-11 shrink-0 place-items-center rounded-md border font-mono text-sm tracking-[0.08em] transition-colors duration-500",
                   current
                     ? "border-signal/30 bg-signal/10 text-signal"
-                    : "border-[var(--line-strong)] bg-ink/40 text-muted"
+                    : "border-[var(--line-strong)] bg-canvas/40 text-muted"
                 )}
               >
                 {monogram(role.company)}
@@ -244,7 +241,7 @@ function RoleEntry({ role, reduced }: { role: Role; reduced: boolean }) {
                 </h3>
 
                 <p className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1.5 text-sm">
-                  <span className="font-medium text-paper">{role.company}</span>
+                  <span className="font-medium text-content">{role.company}</span>
                   {current && (
                     <span className="label inline-flex items-center gap-1.5 rounded-full border border-signal/35 bg-signal/10 px-2.5 py-1 text-signal">
                       <span
@@ -268,7 +265,7 @@ function RoleEntry({ role, reduced }: { role: Role; reduced: boolean }) {
                   <li
                     key={tag}
                     data-tag
-                    className="label inline-flex items-center gap-1.5 rounded-full border border-[var(--line)] bg-ink/30 px-2.5 py-1.5 text-muted transition-colors duration-300 group-hover:border-[var(--line-strong)]"
+                    className="label inline-flex items-center gap-1.5 rounded-full border border-[var(--line)] bg-canvas/30 px-2.5 py-1.5 text-muted transition-colors duration-300 group-hover:border-[var(--line-strong)]"
                   >
                     <span
                       aria-hidden

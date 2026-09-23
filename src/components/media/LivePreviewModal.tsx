@@ -115,8 +115,8 @@ export function LivePreviewModal({
                   className={cn(
                     "inline-flex size-7 items-center justify-center rounded-full transition-colors",
                     viewport === id
-                      ? "bg-signal text-ink"
-                      : "text-muted hover:text-paper"
+                      ? "bg-signal text-on-signal"
+                      : "text-muted hover:text-content"
                   )}
                 >
                   <Icon aria-hidden className="size-3.5" />
@@ -130,7 +130,7 @@ export function LivePreviewModal({
             href={url}
             target="_blank"
             rel="noreferrer noopener"
-            className="inline-flex items-center gap-1.5 rounded-full bg-signal px-4 py-2 text-xs font-medium text-ink transition-colors hover:bg-paper"
+            className="inline-flex items-center gap-1.5 rounded-full bg-signal px-4 py-2 text-xs font-medium text-on-signal transition-colors hover:bg-content"
           >
             Open in new tab
             <ArrowUpRight aria-hidden className="size-3.5" />
@@ -139,20 +139,20 @@ export function LivePreviewModal({
       }
     >
       {/* URL bar — always shows exactly what is being previewed. */}
-      <div className="flex items-center gap-3 border-b border-[var(--line)] bg-ink px-4 py-2 sm:px-6">
+      <div className="flex items-center gap-3 border-b border-[var(--line)] bg-canvas px-4 py-2 sm:px-6">
         <span className="label shrink-0 text-muted">URL</span>
         <span className="truncate font-mono text-xs text-muted">{url}</span>
       </div>
 
-      <div className="relative h-full overflow-auto bg-ink-2 p-3 sm:p-6">
+      <div className="relative h-full overflow-auto bg-surface p-3 sm:p-6">
         {showFrame ? (
           <div
             className="mx-auto h-full transition-[max-width] duration-500 ease-[var(--ease-out-expo)]"
             style={{ maxWidth: frameWidth }}
           >
-            <div className="relative h-full min-h-[60vh] overflow-hidden rounded-sm border border-[var(--line)] bg-ink">
+            <div className="relative h-full min-h-[60vh] overflow-hidden rounded-sm border border-[var(--line)] bg-canvas">
               {state === "loading" && (
-                <div className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-3 bg-ink">
+                <div className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-3 bg-canvas">
                   <Loader2
                     aria-hidden
                     className="size-5 animate-spin text-signal"
@@ -207,7 +207,7 @@ export function LivePreviewModal({
               href={url}
               target="_blank"
               rel="noreferrer noopener"
-              className="inline-flex items-center gap-2 rounded-full bg-signal px-6 py-3 text-sm font-medium text-ink transition-colors hover:bg-paper"
+              className="inline-flex items-center gap-2 rounded-full bg-signal px-6 py-3 text-sm font-medium text-on-signal transition-colors hover:bg-content"
             >
               Open live website
               <ArrowUpRight aria-hidden className="size-4" />
@@ -217,7 +217,7 @@ export function LivePreviewModal({
       </div>
 
       {showFrame && (
-        <p className="border-t border-[var(--line)] bg-ink px-4 py-2 text-center text-[0.6875rem] leading-relaxed text-muted sm:px-6">
+        <p className="border-t border-[var(--line)] bg-canvas px-4 py-2 text-center text-[0.6875rem] leading-relaxed text-muted sm:px-6">
           This resizes the preview frame only. It doesn&rsquo;t reproduce a real
           device — the site still sees a desktop browser, so device-specific
           behaviour won&rsquo;t match.

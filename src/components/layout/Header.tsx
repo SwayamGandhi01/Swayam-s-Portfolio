@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { site } from "@/data/site";
 import { cn } from "@/lib/utils";
 import { AnchorLink } from "@/components/ui/AnchorLink";
+import { ThemeToggle } from "@/components/ui/ThemeToggle";
 import { useActiveSection } from "@/hooks/useActiveSection";
 import { useSmoothScroll } from "./SmoothScroll";
 
@@ -56,7 +57,7 @@ export function Header() {
     <>
       <a
         href="#main"
-        className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded-full focus:bg-signal focus:px-5 focus:py-2.5 focus:text-sm focus:font-medium focus:text-ink"
+        className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded-full focus:bg-signal focus:px-5 focus:py-2.5 focus:text-sm focus:font-medium focus:text-on-signal"
       >
         Skip to content
       </a>
@@ -65,11 +66,11 @@ export function Header() {
         className={cn(
           "fixed inset-x-0 top-0 z-50 transition-[background-color,backdrop-filter,border-color] duration-500",
           scrolled || open
-            ? "border-b border-[var(--line)] bg-ink/72 backdrop-blur-xl"
+            ? "border-b border-[var(--line)] bg-canvas/72 backdrop-blur-xl"
             : "border-b border-transparent"
         )}
       >
-        <div className="shell flex h-[var(--header-h)] items-center justify-between gap-6">
+        <div className="shell flex h-[var(--header-h)] items-center justify-between gap-3 sm:gap-6">
           <Link
             href="/"
             className="group flex items-baseline gap-2.5"
@@ -93,7 +94,7 @@ export function Header() {
                   aria-current={isActive ? "true" : undefined}
                   className={cn(
                     "group relative rounded-full px-3.5 py-2 text-sm transition-colors duration-300",
-                    isActive ? "text-paper" : "text-muted hover:text-paper"
+                    isActive ? "text-content" : "text-muted hover:text-content"
                   )}
                 >
                   <span className="mr-1.5 font-mono text-[0.625rem] text-signal opacity-0 transition-opacity duration-300 group-hover:opacity-100 data-[on=true]:opacity-100" data-on={isActive}>
@@ -105,7 +106,7 @@ export function Header() {
             })}
           </nav>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3">
             <span className="hidden items-center gap-2 md:inline-flex">
               <span className="relative flex size-1.5">
                 <span className="absolute inline-flex size-full animate-ping rounded-full bg-signal opacity-60 motion-safe-only" />
@@ -113,6 +114,13 @@ export function Header() {
               </span>
               <span className="label text-muted">{site.availability}</span>
             </span>
+
+            {/* Sits in the header at every breakpoint rather than being
+                duplicated inside the mobile menu. The header is z-50 and the
+                menu panel z-40, so this stays on top of the open menu and is
+                reachable from it — one control, one place, no second copy to
+                keep in sync. */}
+            <ThemeToggle />
 
             <button
               type="button"
@@ -150,7 +158,7 @@ export function Header() {
         inert={!open}
         aria-hidden={!open}
         className={cn(
-          "fixed inset-0 z-40 bg-ink-2 transition-[clip-path] duration-[650ms] ease-[var(--ease-in-out-quint)] lg:hidden",
+          "fixed inset-0 z-40 bg-surface transition-[clip-path] duration-[650ms] ease-[var(--ease-in-out-quint)] lg:hidden",
           open ? "[clip-path:inset(0_0_0_0)]" : "[clip-path:inset(0_0_100%_0)]"
         )}
       >

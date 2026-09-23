@@ -14,7 +14,7 @@ const base =
 
 const variants: Record<Variant, string> = {
   solid:
-    "bg-signal text-ink hover:bg-paper focus-visible:bg-paper",
+    "bg-signal text-on-signal hover:bg-content focus-visible:bg-content",
   outline:
     "border border-[var(--line-strong)] text-current hover:border-signal hover:text-signal",
   ghost: "text-current hover:text-signal",

@@ -42,7 +42,7 @@ export function Stack() {
                 <ul className="mt-7 space-y-px">
                   {group.items.map((item) => (
                     <li key={item.name}>
-                      <div className="group/item relative -mx-3 rounded-md px-3 py-2.5 transition-colors duration-300 hover:bg-ink-2">
+                      <div className="group/item relative -mx-3 rounded-md px-3 py-2.5 transition-colors duration-300 hover:bg-surface">
                         <span
                           aria-hidden
                           className="absolute left-0 top-1/2 h-0 w-px -translate-y-1/2 bg-signal transition-all duration-400 ease-[var(--ease-out-expo)] group-hover/item:h-[70%]"

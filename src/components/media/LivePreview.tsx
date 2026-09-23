@@ -184,8 +184,8 @@ export function LivePreview({
                     className={cn(
                       "inline-flex size-8 items-center justify-center rounded-full transition-colors",
                       viewport === id
-                        ? "bg-signal text-ink"
-                        : "text-muted hover:text-paper"
+                        ? "bg-signal text-on-signal"
+                        : "text-muted hover:text-content"
                     )}
                   >
                     <Icon aria-hidden className="size-4" />
@@ -220,7 +220,7 @@ export function LivePreview({
             href={url}
             target="_blank"
             rel="noreferrer noopener"
-            className="inline-flex items-center gap-1.5 rounded-full bg-signal px-4 py-2.5 text-xs font-medium text-ink transition-colors hover:bg-paper"
+            className="inline-flex items-center gap-1.5 rounded-full bg-signal px-4 py-2.5 text-xs font-medium text-on-signal transition-colors hover:bg-content"
           >
             Open site
             <ArrowUpRight aria-hidden className="size-3.5" />
@@ -229,21 +229,21 @@ export function LivePreview({
       </div>
 
       {/* Browser frame. Chrome is one compact row so the site gets the height. */}
-      <div className="mt-7 overflow-hidden rounded-sm border border-[var(--line)] bg-ink-2">
-        <div className="flex items-center gap-3 border-b border-[var(--line)] bg-[#1b2026] px-3 py-2">
+      <div className="mt-7 overflow-hidden rounded-sm border border-[var(--line)] bg-surface">
+        <div className="flex items-center gap-3 border-b border-[var(--line)] bg-surface-strong px-3 py-2">
           <div aria-hidden className="flex shrink-0 gap-1.5">
             <span className="size-2.5 rounded-full bg-signal/85" />
-            <span className="size-2.5 rounded-full bg-paper/20" />
-            <span className="size-2.5 rounded-full bg-paper/20" />
+            <span className="size-2.5 rounded-full bg-content/20" />
+            <span className="size-2.5 rounded-full bg-content/20" />
           </div>
-          <div className="flex min-w-0 flex-1 items-center rounded-full bg-ink/65 px-3 py-1">
+          <div className="flex min-w-0 flex-1 items-center rounded-full bg-canvas/65 px-3 py-1">
             <span className="truncate font-mono text-[0.6875rem] text-muted">
               {url}
             </span>
           </div>
         </div>
 
-        <div className="w-full bg-ink">
+        <div className="w-full bg-canvas">
           {failed ? (
             /* A site that refuses framing can still be *shown* — we hold a
                real capture of it. Same box as the live frame so the section
@@ -274,11 +274,11 @@ export function LivePreview({
                 // Weighted to the bottom: solid behind the notice, fully clear
                 // across the top half so the screenshot is actually readable.
                 // A full-height scrim buried the thing it exists to show.
-                className="absolute inset-0 bg-[linear-gradient(to_top,var(--color-ink)_0%,color-mix(in_oklab,var(--color-ink)_92%,transparent)_24%,transparent_56%)]"
+                className="absolute inset-0 bg-[linear-gradient(to_top,var(--color-canvas)_0%,color-mix(in_oklab,var(--color-canvas)_92%,transparent)_24%,transparent_56%)]"
               />
 
               <div className="absolute inset-x-0 bottom-0 flex flex-col items-center gap-4 p-6 text-center sm:p-8">
-                <span className="inline-flex items-center gap-2.5 rounded-full border border-[var(--line-strong)] bg-ink/80 px-4 py-2 backdrop-blur-sm">
+                <span className="inline-flex items-center gap-2.5 rounded-full border border-[var(--line-strong)] bg-canvas/80 px-4 py-2 backdrop-blur-sm">
                   <TriangleAlert aria-hidden className="size-4 text-signal" />
                   <span className="text-xs text-muted">
                     {state === "blocked"
@@ -310,7 +310,7 @@ export function LivePreview({
                     <button
                       type="button"
                       onClick={retry}
-                      className="inline-flex items-center gap-2 rounded-full border border-[var(--line-strong)] bg-ink/70 px-5 py-3 text-sm font-medium text-muted backdrop-blur-sm transition-colors hover:border-signal hover:text-signal"
+                      className="inline-flex items-center gap-2 rounded-full border border-[var(--line-strong)] bg-canvas/70 px-5 py-3 text-sm font-medium text-muted backdrop-blur-sm transition-colors hover:border-signal hover:text-signal"
                     >
                       <RotateCw aria-hidden className="size-4" />
                       Try again
@@ -320,7 +320,7 @@ export function LivePreview({
                     href={url}
                     target="_blank"
                     rel="noreferrer noopener"
-                    className="inline-flex items-center gap-2 rounded-full bg-signal px-6 py-3 text-sm font-medium text-ink transition-colors hover:bg-paper"
+                    className="inline-flex items-center gap-2 rounded-full bg-signal px-6 py-3 text-sm font-medium text-on-signal transition-colors hover:bg-content"
                   >
                     Open website
                     <ArrowUpRight aria-hidden className="size-4" />
@@ -360,7 +360,7 @@ export function LivePreview({
                   width: `calc(100% + ${noScroll ? 0 : scrollbarWidth}px)`,
                   height: "100%",
                 }}
-                className="absolute left-0 top-0 border-0 bg-paper"
+                className="absolute left-0 top-0 border-0 bg-white"
               />
 
               {/* The real screenshot of this site, holding the space until the
@@ -384,14 +384,14 @@ export function LivePreview({
                     priority
                   />
                 ) : (
-                  <div className="absolute inset-0 bg-ink-2" />
+                  <div className="absolute inset-0 bg-surface" />
                 )}
 
                 <div className="absolute inset-x-0 bottom-0 flex justify-center p-4">
                   <p
                     role="status"
                     aria-live="polite"
-                    className="label inline-flex items-center gap-2.5 rounded-full bg-ink/85 px-4 py-2.5 text-paper backdrop-blur-sm"
+                    className="label inline-flex items-center gap-2.5 rounded-full bg-canvas/85 px-4 py-2.5 text-content backdrop-blur-sm"
                   >
                     <Loader2 aria-hidden className="size-3.5 animate-spin text-signal" />
                     {state === "ready" ? "Ready" : "Loading website…"}

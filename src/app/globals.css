@@ -2,22 +2,32 @@
 
 /* =========================================================================
    THE WORKBENCH — design system
-   Ink-first "digital developer studio": deep ink surfaces, warm paper
-   inversions, one signal accent, mono used as technical annotation.
+   A "digital developer studio" in two themes: a deep ink night and a warm
+   paper day, one signal accent across both, mono as technical annotation.
+
+   ── Theming ───────────────────────────────────────────────────────────────
+   Tokens are SEMANTIC, not literal — `canvas`, `surface`, `content` rather
+   than `ink`, `paper`. That is the whole trick: a component says
+   `bg-canvas text-content` once and renders correctly in either theme,
+   because only these seven values move. There is no `dark:` variant
+   anywhere in the codebase and no component knows which theme is active.
+
+   Dark is the default and is declared here; `html[data-theme="light"]`
+   below re-points the same names. Light is tuned by hand — it is not an
+   inversion of the dark values, and its accent is darkened because
+   #ff5c35 on cream is 2.6:1 and fails AA.
    ========================================================================= */
 
 @theme {
-  /* --- palette ------------------------------------------------------- */
-  --color-ink: #0b0c0e;
-  --color-ink-2: #121417;
-  --color-ink-3: #191c21;
-  --color-paper: #efeae1;
-  --color-paper-2: #e3ddd2;
-  --color-paper-3: #d3ccbf;
-  --color-signal: #ff5c35;
-  --color-signal-soft: #ffb79f;
+  /* --- semantic palette (dark = default) ------------------------------ */
+  --color-canvas: #0b0c0e;
+  --color-surface: #121417;
+  --color-surface-strong: #191c21;
+  --color-content: #efeae1;
   --color-muted: #8b919b;
-  --color-muted-ink: #6b6256;
+  --color-signal: #ff5c35;
+  /* Text/icons sitting ON a signal fill. */
+  --color-on-signal: #0b0c0e;
 
   /* --- type ---------------------------------------------------------- */
   --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
@@ -47,22 +57,80 @@
 
 @layer base {
   :root {
-    --line: color-mix(in oklab, var(--color-paper) 13%, transparent);
-    --line-strong: color-mix(in oklab, var(--color-paper) 24%, transparent);
+    /* Derived from `--color-content`, so hairlines follow the theme without
+       being declared twice. Custom properties substitute lazily, which means
+       this one line is also correct inside `.theme-invert` below. */
+    --line: color-mix(in oklab, var(--color-content) 13%, transparent);
+    --line-strong: color-mix(in oklab, var(--color-content) 24%, transparent);
     --header-h: 4.5rem;
+    /* Dark needs no lift; light gets a soft one so white cards separate from
+       the cream page without a heavy border. */
+    --shadow-card: 0 0 0 0 transparent;
     color-scheme: dark;
   }
 
-  /* Inverted (paper) regions re-declare the hairline colour so bordered
-     components work on both surfaces without variant-specific classes. */
-  .on-paper {
-    --line: color-mix(in oklab, var(--color-ink) 14%, transparent);
-    --line-strong: color-mix(in oklab, var(--color-ink) 28%, transparent);
-    /* The accent is tuned for dark surfaces: #ff5c35 on paper is only
-       2.6:1, which fails AA. This is the same hue burnt down to 5.2:1 so
-       `text-signal` stays legible without needing a separate utility. */
+  /* --- Light theme ------------------------------------------------------
+     Warm cream rather than white, charcoal rather than black, and the accent
+     burnt down from #ff5c35, which on cream is 2.6:1 and fails AA outright.
+     Measured against the surfaces each token actually lands on (canvas /
+     surface / surface-strong): content 16.0 / 17.3 / 14.6, muted 5.4 / 5.8 /
+     4.9, signal 5.6 / 6.1 / 5.1, and 6.1:1 for on-signal text inside a
+     filled accent button. */
+  html[data-theme="light"] {
+    --color-canvas: #f7f4ed;
+    --color-surface: #fffdf8;
+    --color-surface-strong: #efe9de;
+    --color-content: #17191d;
+    --color-muted: #5d6572;
     --color-signal: #b03714;
+    --color-on-signal: #fffdf8;
+    --shadow-card:
+      0 1px 2px color-mix(in oklab, var(--color-content) 5%, transparent),
+      0 10px 30px -18px color-mix(in oklab, var(--color-content) 26%, transparent);
     color-scheme: light;
+  }
+
+  /* --- Inverted band ----------------------------------------------------
+     The About section reads as a contrast break in the page rhythm. Rather
+     than being "the light one", it is always the OPPOSITE of whatever theme
+     is active — a paper band at night, an ink band by day. Same component,
+     same classes; only these tokens flip. */
+  :root .theme-invert {
+    /* A light surface needs the lift whichever theme is active. */
+    --shadow-card:
+      0 1px 2px color-mix(in oklab, var(--color-content) 5%, transparent),
+      0 10px 30px -18px color-mix(in oklab, var(--color-content) 26%, transparent);
+    --color-canvas: #efeae1;
+    --color-surface: #e3ddd2;
+    --color-surface-strong: #d3ccbf;
+    --color-content: #17191d;
+    /* The band's paper is a shade deeper than the light theme's, so its
+       muted grey runs warmer and one step darker: 5.7:1 on the band, 5.0:1
+       on its cards. */
+    --color-muted: #635a4e;
+    --color-signal: #b03714;
+    --color-on-signal: #fffdf8;
+    color-scheme: light;
+  }
+
+  html[data-theme="light"] .theme-invert {
+    --color-canvas: #0b0c0e;
+    --color-surface: #121417;
+    --color-surface-strong: #191c21;
+    --color-content: #efeae1;
+    --color-muted: #8b919b;
+    --color-signal: #ff5c35;
+    --color-on-signal: #0b0c0e;
+    --shadow-card: 0 0 0 0 transparent;
+    color-scheme: dark;
+  }
+
+  /* Theme toggle icon/label swap. Done in CSS rather than React state so the
+     control is correct on the very first paint and cannot cause a hydration
+     mismatch — the server has no idea which theme the visitor chose. */
+  html[data-theme="light"] [data-theme-when="dark"],
+  html:not([data-theme="light"]) [data-theme-when="light"] {
+    display: none;
   }
 
   * {
@@ -94,8 +162,8 @@
   }
 
   body {
-    background-color: var(--color-ink);
-    color: var(--color-paper);
+    background-color: var(--color-canvas);
+    color: var(--color-content);
     font-family: var(--font-sans);
     font-synthesis-weight: none;
     text-rendering: optimizeLegibility;
@@ -104,7 +172,7 @@
 
   ::selection {
     background: var(--color-signal);
-    color: var(--color-ink);
+    color: var(--color-on-signal);
   }
 
   :focus-visible {

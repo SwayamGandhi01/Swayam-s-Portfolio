@@ -96,7 +96,7 @@ export function ScreenshotGallery({
       <figure className="mt-6">
         <div
           className={cn(
-            "group relative overflow-hidden rounded-sm border border-[var(--line)] bg-ink-2",
+            "group relative overflow-hidden rounded-sm border border-[var(--line)] bg-surface",
             current.device === "mobile"
               ? "mx-auto aspect-9/16 max-w-sm"
               : current.device === "tablet"
@@ -120,7 +120,7 @@ export function ScreenshotGallery({
             onClick={() => setLightbox(true)}
             className="absolute inset-0 flex items-end justify-end p-4 focus-visible:outline-offset-[-4px]"
           >
-            <span className="label inline-flex items-center gap-2 rounded-full bg-ink/85 px-3.5 py-2 text-paper opacity-0 backdrop-blur-sm transition-opacity duration-300 group-hover:opacity-100 group-focus-within:opacity-100 max-lg:opacity-100">
+            <span className="label inline-flex items-center gap-2 rounded-full bg-canvas/85 px-3.5 py-2 text-content opacity-0 backdrop-blur-sm transition-opacity duration-300 group-hover:opacity-100 group-focus-within:opacity-100 max-lg:opacity-100">
               <Maximize2 aria-hidden className="size-3.5" />
               View full size
             </span>
@@ -179,7 +179,7 @@ export function ScreenshotGallery({
                 className="object-cover object-top"
               />
               <span className="sr-only">{captionFor(shot) ?? `Screenshot ${i + 1}`}</span>
-              <span className="absolute bottom-1 right-1 rounded-full bg-ink/80 p-1">
+              <span className="absolute bottom-1 right-1 rounded-full bg-canvas/80 p-1">
                 <DeviceBadge device={shot.device} compact />
               </span>
             </button>
@@ -275,7 +275,7 @@ function GalleryArrow({
       aria-label={direction === "prev" ? "Previous screenshot" : "Next screenshot"}
       className={cn(
         "absolute top-1/2 z-10 inline-flex size-10 -translate-y-1/2 items-center justify-center rounded-full",
-        "border border-[var(--line-strong)] bg-ink/80 text-paper backdrop-blur-sm",
+        "border border-[var(--line-strong)] bg-canvas/80 text-content backdrop-blur-sm",
         "transition-[opacity,border-color] duration-300 hover:border-signal hover:text-signal",
         "opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 max-lg:opacity-100",
         direction === "prev" ? "left-3" : "right-3"

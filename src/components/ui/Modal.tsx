@@ -92,13 +92,13 @@ export function Modal({
       aria-labelledby={labelledBy}
       aria-label={labelledBy ? undefined : title}
       className={cn(
-        "m-0 max-h-none max-w-none bg-transparent p-0 text-paper",
-        "h-full w-full backdrop:bg-ink/85 backdrop:backdrop-blur-sm",
+        "m-0 max-h-none max-w-none bg-transparent p-0 text-content",
+        "h-full w-full backdrop:bg-canvas/85 backdrop:backdrop-blur-sm",
         "open:flex open:flex-col"
       )}
     >
       <div className={cn("flex h-full w-full flex-col", className)}>
-        <header className="flex shrink-0 items-center justify-between gap-4 border-b border-[var(--line)] bg-ink px-4 py-3 sm:px-6">
+        <header className="flex shrink-0 items-center justify-between gap-4 border-b border-[var(--line)] bg-canvas px-4 py-3 sm:px-6">
           <div className="flex min-w-0 items-center gap-4">
             <h2
               id={labelledBy}
@@ -121,7 +121,7 @@ export function Modal({
           </div>
         </header>
 
-        <div className="min-h-0 flex-1 bg-ink-2">{children}</div>
+        <div className="min-h-0 flex-1 bg-surface">{children}</div>
       </div>
     </dialog>
   );

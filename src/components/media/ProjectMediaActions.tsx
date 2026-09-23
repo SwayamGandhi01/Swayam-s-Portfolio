@@ -62,7 +62,7 @@ export function ProjectMediaActions({
             className={cn(
               base,
               detail
-                ? "bg-signal text-ink hover:bg-paper"
+                ? "bg-signal text-on-signal hover:bg-content"
                 : "border border-[var(--line-strong)] text-muted hover:border-signal hover:text-signal"
             )}
           >
