@@ -25,7 +25,7 @@ export const site = {
   },
   tagline:
     "Full stack developer working across React and Next.js interfaces, Node and Strapi back ends, and the integrations that hold them together.",
-  location: placeholder("City, Country"),
+  location: "Khanna, Punjab, India",
   availability: "Open to new projects",
 
   /* --- Contact ---------------------------------------------------------- */

@@ -6,13 +6,36 @@ import { cn } from "@/lib/utils";
 import { site } from "@/data/site";
 
 type Status = "idle" | "submitting" | "success" | "error";
-type Errors = Partial<Record<"name" | "email" | "message", string>>;
+type Errors = Partial<Record<"name" | "email" | "phone" | "message", string>>;
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+
+/**
+ * Phone is checked by counting digits, not by matching a format.
+ *
+ * Formats vary wildly by country — spaces, dots, dashes, brackets, leading
+ * zeros, +country codes — and a strict pattern mostly succeeds at rejecting
+ * real numbers from people trying to hire you. So: allow the punctuation
+ * people actually type, then require 7–15 digits. 15 is the E.164 maximum;
+ * below 7 nothing is dialable.
+ */
+const PHONE_ALLOWED_RE = /^[+\d\s().-]+$/;
+
+export function validatePhone(raw: string): string | undefined {
+  const phone = raw.trim();
+  if (!phone) return undefined; // Optional — blank is valid.
+  if (!PHONE_ALLOWED_RE.test(phone))
+    return "Digits, spaces and + ( ) - . only, please.";
+  const digits = phone.replace(/\D/g, "").length;
+  if (digits < 7 || digits > 15)
+    return "Please enter a valid phone number, or leave it blank.";
+  return undefined;
+}
 
 function validate(values: {
   name: string;
   email: string;
+  phone: string;
   message: string;
 }): Errors {
   const errors: Errors = {};
@@ -20,6 +43,10 @@ function validate(values: {
     errors.name = "Please enter your name (2 characters or more).";
   if (!EMAIL_RE.test(values.email.trim()))
     errors.email = "Please enter a valid email address.";
+
+  const phoneError = validatePhone(values.phone);
+  if (phoneError) errors.phone = phoneError;
+
   if (values.message.trim().length < 20)
     errors.message = "A little more detail, please — at least 20 characters.";
   return errors;
@@ -67,6 +94,7 @@ export function ContactForm() {
     const values = {
       name: String(data.get("name") ?? ""),
       email: String(data.get("email") ?? ""),
+      phone: String(data.get("phone") ?? ""),
       message: String(data.get("message") ?? ""),
       subject: String(data.get("subject") ?? ""),
       hpReference: String(data.get("hp_reference") ?? ""), // honeypot
@@ -189,31 +217,58 @@ export function ContactForm() {
         </div>
       </div>
 
-      <div>
-        <label htmlFor={fid("subject")} className="label block text-muted">
-          Project type
-        </label>
-        <select
-          id={fid("subject")}
-          name="subject"
-          defaultValue="Full stack build"
-          className={cn("mt-3 cursor-pointer", fieldClass())}
-        >
-          {[
-            "Full stack build",
-            "Frontend work",
-            "Backend / API work",
-            "Strapi CMS work",
-            "Landing page",
-            "Redesign / modernisation",
-            "Performance work",
-            "Something else",
-          ].map((option) => (
-            <option key={option} value={option} className="bg-ink-2">
-              {option}
-            </option>
-          ))}
-        </select>
+      <div className="grid gap-8 sm:grid-cols-2">
+        <div>
+          <label htmlFor={fid("phone")} className="label block text-muted">
+            Phone <span className="opacity-60">(optional)</span>
+          </label>
+          <input
+            id={fid("phone")}
+            name="phone"
+            // `tel` keeps the field permissive — browsers don't second-guess
+            // international formats the way they do with `email`. `inputMode`
+            // is what actually brings up the dial pad on a phone.
+            type="tel"
+            inputMode="tel"
+            autoComplete="tel"
+            aria-invalid={errors.phone ? true : undefined}
+            aria-describedby={errors.phone ? eid("phone") : undefined}
+            placeholder="+91 98765 43210"
+            className={cn("mt-3", fieldClass(errors.phone))}
+          />
+          {errors.phone && (
+            <p id={eid("phone")} className="mt-2 text-xs text-red-400">
+              {errors.phone}
+            </p>
+          )}
+        </div>
+
+        <div>
+          <label htmlFor={fid("subject")} className="label block text-muted">
+            Project type
+          </label>
+          <select
+            id={fid("subject")}
+            name="subject"
+            defaultValue="Full stack build"
+            className={cn("mt-3 cursor-pointer", fieldClass())}
+          >
+            {[
+              "Full stack build",
+              "Frontend work",
+              "Backend / API work",
+              "Strapi CMS work",
+              "Landing page",
+              "Redesign / modernisation",
+              "Performance work",
+              "Something else",
+            ].map((option) => (
+              <option key={option} value={option} className="bg-ink-2">
+                {option}
+              </option>
+            ))}
+          </select>
+        </div>
       </div>
 
       <div>

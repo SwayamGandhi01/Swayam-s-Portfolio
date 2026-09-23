@@ -111,6 +111,39 @@ const monthLabel = (value: string) => MONTH_LABEL.format(parseMonth(value));
 export const rolePeriod = (role: Role) =>
   `${monthLabel(role.start)} — ${role.end ? monthLabel(role.end) : "Present"}`;
 
+/** The two ends separately, for timelines that stack them. */
+export const roleDates = (role: Role) => ({
+  from: monthLabel(role.start),
+  to: role.end ? monthLabel(role.end) : "Present",
+});
+
+/**
+ * Initials for a company, used as a neutral stand-in for a logo we don't have
+ * the rights to. Legal suffixes are dropped so "Midis Resources PVT LTD"
+ * reads as MR rather than MR PL.
+ */
+const LEGAL_SUFFIXES = new Set([
+  "pvt",
+  "ltd",
+  "limited",
+  "llc",
+  "inc",
+  "co",
+  "plc",
+  "gmbh",
+]);
+
+export function monogram(company: string): string {
+  const words = company
+    .split(/\s+/)
+    .filter((word) => !LEGAL_SUFFIXES.has(word.toLowerCase().replace(/\./g, "")));
+  return (words.length ? words : [company])
+    .slice(0, 2)
+    .map((word) => word[0])
+    .join("")
+    .toUpperCase();
+}
+
 /** The month professional work began, e.g. "October 2024". */
 export const careerStartLabel = new Intl.DateTimeFormat("en-GB", {
   month: "long",

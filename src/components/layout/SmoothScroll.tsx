@@ -67,7 +67,17 @@ export function SmoothScroll({ children }: { children: React.ReactNode }) {
       scrollTo: (target, offset = 0) => {
         const lenis = lenisRef.current;
         if (!lenis) return nativeScrollTo(target, offset);
-        lenis.scrollTo(target, { offset, duration: 1.2 });
+        lenis.scrollTo(target, {
+          offset,
+          duration: 1.2,
+          // Without this, a programmatic scroll is silently dropped whenever
+          // Lenis happens to be stopped. That bit the mobile menu: opening it
+          // calls `stop()`, and tapping a link calls `scrollTo()` before
+          // React has re-rendered and restarted Lenis — so the menu closed,
+          // the hash updated, and the page never moved. Every call through
+          // this API is a deliberate navigation, so none should be dropped.
+          force: true,
+        });
       },
       stop: () => lenisRef.current?.stop(),
       start: () => lenisRef.current?.start(),

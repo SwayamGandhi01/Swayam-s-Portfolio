@@ -85,12 +85,6 @@ export function Contact() {
               </div>
             </dl>
 
-            <p className="max-w-[46ch] text-xs leading-relaxed text-muted">
-              Note: the form is fully built but not yet connected to an email
-              provider, so it will tell you honestly that a message
-              wasn&rsquo;t sent. Until it&rsquo;s configured, email and phone
-              are the reliable routes.
-            </p>
           </Reveal>
         </div>
 

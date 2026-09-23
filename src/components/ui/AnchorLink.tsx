@@ -46,11 +46,23 @@ export function AnchorLink({
         const target = document.querySelector<HTMLElement>(href);
         if (!target) return;
         e.preventDefault();
-        onNavigate?.();
-        // Clear the fixed header (4.5rem) plus breathing room, matching the
-        // `scroll-mt-24` that native anchor jumps use.
-        lenis.scrollTo(target, -96);
         history.replaceState(null, "", href);
+
+        // `onNavigate` closes the mobile menu, and that teardown restarts
+        // Lenis. Lenis's `start()` calls `reset()` internally, which cancels
+        // any scroll already in flight — so scrolling first and closing second
+        // meant the menu shut, the hash updated, and the page never moved.
+        //
+        // Closing first and scrolling on the next frame puts the navigation
+        // after the teardown instead of underneath it.
+        onNavigate?.();
+        requestAnimationFrame(() => {
+          // No manual offset: Lenis honours the section's `scroll-mt-24`
+          // (96px) the same way a native anchor jump does. Passing -96 on top
+          // of it double-counted the header clearance and left every section
+          // sitting 192px down. The CSS is the single source of truth.
+          lenis.scrollTo(target);
+        });
       }}
       {...rest}
     >

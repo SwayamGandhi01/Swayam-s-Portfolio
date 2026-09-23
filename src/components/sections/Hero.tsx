@@ -148,7 +148,7 @@ export function Hero() {
         <div className="flex items-center justify-between gap-6">
           <button
             type="button"
-            onClick={() => lenis.scrollTo("#about", -96)}
+            onClick={() => lenis.scrollTo("#about")}
             className="label group flex items-center gap-3 text-muted transition-colors hover:text-paper"
           >
             <ArrowDown

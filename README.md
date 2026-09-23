@@ -136,18 +136,25 @@ Neither appears anywhere except the contact section — not in the footer, not i
 
 The form is complete — validation, `aria-describedby` error wiring, focus management, loading state, a live region, honeypot, a minimum time-to-complete, and per-IP rate limiting.
 
-**It does not send email yet, by design.** `/api/contact` returns 503 with an honest message until credentials exist, and the form shows that message rather than a false success.
-
-To enable delivery:
+**Delivery goes through Resend.** The flow is: form → `POST /api/contact` → server-side route handler → Resend → inbox. The API key is read from `process.env.RESEND_API_KEY` inside the handler only; the SDK is dynamically imported there, so nothing about Resend can reach a client bundle.
 
 ```bash
-npm install resend
-cp .env.example .env.local   # then fill it in
+cp .env.example .env.local   # then fill in the three variables
 ```
 
-Then uncomment the send block in `src/app/api/contact/route.ts`.
+| Variable | Notes |
+| --- | --- |
+| `RESEND_API_KEY` | From Resend → API Keys. Server-only — never `NEXT_PUBLIC_`. |
+| `CONTACT_TO_EMAIL` | Your inbox. Any address. |
+| `CONTACT_FROM_EMAIL` | **Must be on a domain verified in Resend.** The visitor's address goes in `replyTo`, never `from` — using it as the sender would fail SPF/DKIM. |
 
-Before going live, put a real CAPTCHA (Cloudflare Turnstile or hCaptcha) in front of the endpoint. The honeypot and timing checks stop naive bots, not targeted ones, and the rate limiter is in-memory and per-instance.
+With any of the three missing, the route returns 503 and the form says the message wasn't sent, rather than showing a false success.
+
+The order of checks is deliberate — body size, spam screening, rate limit, validation, then the send — so the paid API call is the last thing that happens. Every value interpolated into the email is HTML-escaped: the message is arbitrary text from a stranger landing in your inbox.
+
+Resend's own errors (which can name the account, domain or key) are logged server-side; the visitor only ever sees a generic failure message.
+
+Before going live, consider a real CAPTCHA (Cloudflare Turnstile or hCaptcha) in front of the endpoint. The honeypot and timing checks stop naive bots, not targeted ones, and the rate limiter is in-memory and per-instance — on Vercel that means per warm lambda, not a global counter.
 
 ---
 
